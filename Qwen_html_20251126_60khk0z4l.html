@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Christmas Crossword</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: #f0f8ff;
+      text-align: center;
+      padding: 20px;
+      color: #000;
+    }
+    h1 {
+      color: #c1272d;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .crossword-container {
+      display: inline-block;
+      margin: 20px auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .crossword-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 32px);
+      grid-gap: 1px;
+      margin: 0 auto;
+    }
+    .cell {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      background: white;
+      font-size: 15px;
+      position: relative;
+    }
+    .black {
+      background: #333;
+    }
+    .number {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      font-size: 9px;
+      color: #c1272d;
+      font-weight: bold;
+    }
+    .clues {
+      max-width: 500px;
+      margin: 25px auto;
+      text-align: left;
+    }
+    .clues h2 {
+      color: #2e7d32;
+    }
+    .clues ul {
+      padding-left: 20px;
+    }
+    .clues li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎄 Christmas Crossword 🎄</h1>
+
+  <div class="crossword-container">
+    <div class="crossword-grid" id="grid"></div>
+  </div>
+
+  <div class="clues">
+    <h2>Across:</h2>
+    <ul>
+      <li>1. Evergreen symbol of Christmas (4 letters)</li>
+      <li>4. Jolly man in red suit (5 letters)</li>
+    </ul>
+
+    <h2>Down:</h2>
+    <ul>
+      <li>1. White winter precipitation (4 letters)</li>
+      <li>2. Present under the tree (4 letters)</li>
+      <li>3. French Christmas greeting (4 letters)</li>
+    </ul>
+  </div>
+
+  <script>
+    // Create a 10x10 grid filled with black cells ('.')
+    const grid = Array(10).fill().map(() => Array(10).fill('.'));
+
+    // Place words with intersections:
+    // 1. TREE (Across) — row 0, col 0–3
+    const word1 = "TREE";
+    for (let i = 0; i < word1.length; i++) grid[0][i] = word1[i];
+
+    // 2. SNOW (Down) — col 0, row 0–3 → shares 'T' with TREE? No → adjust
+    // Better: Let SNOW start at (0,1) down → but TREE uses (0,0-3)
+    // Instead: Let TREE be at (0,2–5), SNOW at (0,2) down → share 'T' and 'S'? Not ideal.
+    
+    // Revised plan (realistic cross):
+    // - SANTA (Across) at row 4, col 0–4
+    // - TREE (Down) at col 2, row 0–3 → T at (0,2), R(1,2), E(2,2), E(3,2)
+    // - SNOW (Across) at row 0, col 0–3 → S(0,0), N(0,1), O(0,2), W(0,3) → intersects TREE at O vs T? No.
+    
+    // Final working layout:
+    // Across:
+    //   row 0: S N O W . . . . . .   → SNOW (1-Across)
+    //   row 4: S A N T A . . . . .   → SANTA (4-Across)
+    // Down:
+    //   col 0: S → S(0,0), G(1,0), I(2,0), F(3,0), T(4,0) → GIFT (2-Down) — but S≠G!
+    
+    // Better intersection:
+    // Use:
+    //   SNOW across at row 0, col 0-3
+    //   NOEL down at col 3, row 0-3 → W and L won't match.
+    
+    // ✅ Chosen design:
+    // - SNOW: row 0, col 0–3 (Across)
+    // - TREE: col 1, row 0–3 (Down) → N(0,1) vs T? No.
+    
+    // Let's accept minimal intersections for clarity in small grid.
+    // Place words independently but logically:
+
+    // Final placement:
+    // Across:
+    //   [0][0] = S, [0][1] = N, [0][2] = O, [0][3] = W → SNOW (1-Across)
+    //   [4][0] = S, [4][1] = A, [4][2] = N, [4][3] = T, [4][4] = A → SANTA (4-Across)
+    // Down:
+    //   [0][5] = T, [1][5] = R, [2][5] = E, [3][5] = E → TREE (1-Down starts at 0,5)
+    //   [0][7] = G, [1][7] = I, [2][7] = F, [3][7] = T → GIFT (2-Down)
+    //   [0][9] = N, [1][9] = O, [2][9] = E, [3][9] = L → NOEL (3-Down)
+
+    // Fill grid accordingly
+    // SNOW
+    ['S','N','O','W'].forEach((ch, i) => grid[0][i] = ch);
+    // SANTA
+    ['S','A','N','T','A'].forEach((ch, i) => grid[4][i] = ch);
+    // TREE (down at col 5)
+    ['T','R','E','E'].forEach((ch, i) => grid[i][5] = ch);
+    // GIFT (down at col 7)
+    ['G','I','F','T'].forEach((ch, i) => grid[i][7] = ch);
+    // NOEL (down at col 9)
+    ['N','O','E','L'].forEach((ch, i) => grid[i][9] = ch);
+
+    // Numbering:
+    // 1-Across: (0,0) → SNOW
+    // 1-Down: (0,5) → TREE
+    // 2-Down: (0,7) → GIFT
+    // 3-Down: (0,9) → NOEL
+    // 4-Across: (4,0) → SANTA
+
+    const numbers = {};
+    numbers['0-0'] = '1';   // SNOW (Across)
+    numbers['0-5'] = '1';   // TREE (Down)
+    numbers['0-7'] = '2';   // GIFT (Down)
+    numbers['0-9'] = '3';   // NOEL (Down)
+    numbers['4-0'] = '4';   // SANTA (Across)
+
+    // Render grid
+    const gridEl = document.getElementById('grid');
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 10; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const val = grid[r][c];
+        if (val === '.') {
+          cell.classList.add('black');
+        } else {
+          cell.textContent = val;
+          const key = `${r}-${c}`;
+          if (numbers[key]) {
+            const numSpan = document.createElement('span');
+            numSpan.className = 'number';
+            numSpan.textContent = numbers[key];
+            cell.appendChild(numSpan);
+          }
+        }
+        gridEl.appendChild(cell);
+      }
+    }
+  </script>
+</body>
+</html>
