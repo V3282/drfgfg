@@ -233,5 +233,17 @@ clogs: 0.15%
 <h2> 10 апреля , 2026</h2>
       <a href="Q1.png">проект БД стоматология 1 </a>
  <a href="Q2.png">проект БД стоматология 2 </a>
+      <h2> 23 мая, 2026</h2
+                 import pandas as pd
+
+# Читаем Excel
+df = pd.read_excel('2025/102C/инфа 102С 23,05.xlsx')
+
+# Сохраняем как CSV
+df.to_csv('2025/102C/data.csv', index=False, encoding='utf-8')
+
+# Или создаем Markdown таблицу
+with open('table.md', 'w', encoding='utf-8') as f:
+    f.write(df.to_markdown(index=False))
 </body>
 </html>
